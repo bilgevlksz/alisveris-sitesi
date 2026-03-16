@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bi Bak Yap - Ev & Yaşam</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer" />
+  <style>
+    :root {
+      --primary: #ff8a00;
+      --secondary: #e52e71;
+      --bg: #f5f5f7;
+      --text: #333;
+      --card-bg: #fff;
+      --shadow: rgba(0,0,0,0.1);
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Montserrat', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    a, button { text-decoration: none; border: none; background: none; font: inherit; color: inherit; cursor: pointer; }
+    /* Navbar */
+    .navbar {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 32px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 12px var(--shadow);
+    }
+    .logo { color: #fff; font-size: 1.8rem; font-weight: 700; letter-spacing: 1px; }
+    .search-bar { flex: 1; max-width: 500px; margin: 0 24px; position: relative; }
+    .search-bar input {
+      width: 100%;
+      padding: 10px 48px 10px 16px;
+      border-radius: 24px;
+      border: 1px solid #ddd;
+      transition: box-shadow .3s;
+    }
+    .search-bar input:focus { box-shadow: 0 0 8px var(--shadow); outline: none; }
+    .search-bar .fa-search {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #888;
+      font-size: 1.2rem;
+    }
+    .cart-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: var(--card-bg);
+      border-radius: 24px;
+      box-shadow: 0 2px 8px var(--shadow);
+      transition: transform .2s;
+    }
+    .cart-btn:hover { transform: scale(1.05); }
+    .cart-count { background: var(--secondary); color: #fff; border-radius: 50%; padding: 4px 8px; font-size: .8rem; }
+    /* Breadcrumbs */
+    .breadcrumbs {
+      max-width: 1200px;
+      margin: 24px auto 0;
+      padding: 0 32px;
+      font-size: .9rem;
+      color: #666;
+    }
+    .breadcrumbs a { color: var(--secondary); }
+    /* Subscribe */
+    .subscribe {
+      background: #fff;
+      padding: 32px 24px;
+      text-align: center;
+      margin: 24px auto;
+      max-width: 800px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .subscribe h3 { font-weight: 600; }
+    .subscribe form { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; }
+    .subscribe input {
+      flex: 1;
+      min-width: 200px;
+      padding: 12px 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    .subscribe .sub-btn {
+      padding: 12px 24px;
+      background: var(--secondary);
+      color: #fff;
+      border-radius: 6px;
+      transition: background .3s;
+    }
+    .subscribe .sub-btn:hover { background: #bf265c; }
+    /* Controls */
+    .controls {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+    .controls select, .controls button { padding: 8px 12px; border: 1px solid #ccc; border-radius: 6px; background: #fff; }
+    .view-toggle { display: flex; gap: 8px; }
+    .view-toggle button { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; }
+    .view-toggle .active { background: var(--secondary); color: #fff; border-color: var(--secondary); }
+    /* Filter Panel */
+    #filter-panel { display: none; max-width: 1200px; margin: 16px auto 32px; padding: 0 32px; }
+    .filter-group { background: #fff; padding: 16px; border-radius: 8px; box-shadow: 0 2px 8px var(--shadow); margin-bottom: 16px; }
+    .filter-group h5 { margin-bottom: 12px; font-weight: 600; }
+    .filter-group label { display: block; margin-bottom: 8px; }
+    .filter-group .range-value { margin-top: 8px; font-size: .9rem; }
+    /* Products */
+    #products.grid-view { display: grid; grid-template-columns: repeat(auto-fill,minmax(300px,1fr)); gap: 24px; max-width: 1200px; margin: 0 auto 40px; padding: 0 32px; }
+    #products.list-view { display: flex; flex-direction: column; align-items: center; gap: 24px; margin: 0 auto 40px; padding: 0 32px; }
+    .product {
+      background: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px var(--shadow);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      transition: transform .3s, box-shadow .3s;
+    }
+    .product:hover { transform: translateY(-8px); box-shadow: 0 8px 24px var(--shadow); }
+    #products.list-view .product { flex-direction: row; height: 180px; }
+    .product img { width: 100%; height: 200px; object-fit: contain; }
+    #products.list-view .product img { width: 220px; height: 100%; }
+    .product .info { padding: 16px; flex: 1; display: flex; flex-direction: column; }
+    .product .info h4 { margin: 0 0 12px; font-size: 1.1rem; font-weight: 600; flex: 1; }
+    .product .info .price { margin-bottom: 12px; font-weight: 700; color: var(--primary); }
+    .product .info .actions { display: flex; gap: 8px; }
+    .product .info .actions button {
+      flex: 1;
+      padding: 10px;
+      border-radius: 6px;
+      transition: background .3s;
+      font-weight: 600;
+    }
+    .add { background: var(--primary); color: #fff; }
+    .add:hover { background: #e06e00; }
+    .fav { background: #fff; color: var(--secondary); border: 1px solid var(--secondary); }
+    .fav-btn {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 16px; background: var(--card-bg);
+  border-radius: 24px; box-shadow: 0 2px 8px var(--shadow);
+  transition: transform .2s; color: var(--secondary);
+}
+.fav-btn:hover { transform: scale(1.05); color: var(--secondary); }
+    .fav.active, .fav:hover { background: var(--secondary); color: #fff; }
+    /* Quick View Overlay */
+    .product::after {
+      content: 'Hızlı Görünüm';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%) scale(0);
+      background: rgba(0,0,0,0.6);
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-size: .9rem;
+      transition: transform .3s;
+    }
+    .product:hover::after { transform: translate(-50%,-50%) scale(1); }
+    /* Pagination */
+    .pagination { display: flex; justify-content: center; gap: 10px; margin-bottom: 40px; }
+    .pagination button { padding: 8px 12px; border: 1px solid #ccc; background: #fff; border-radius: 6px; }
+    .pagination button.active, .pagination button:hover { background: var(--secondary); color: #fff; border-color: var(--secondary); }
+    /* Back to Top */
+    #back-to-top { position: fixed; bottom: 30px; right: 30px; width: 50px; height: 50px; background: var(--secondary); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px var(--shadow); opacity: 0; visibility: hidden; transition: opacity .3s; }
+    #back-to-top.show { opacity: 1; visibility: visible; }
+    /* Toast */
+    .toast { position: fixed; bottom: 20px; right: 20px; background: rgba(0,0,0,0.8); color: #fff; padding: 10px 15px; border-radius: 5px; animation: fadeInOut 3s forwards; }
+    @keyframes fadeInOut { 0% { opacity:0; transform: translateY(20px);} 10% { opacity:1; transform: translateY(0);} 90% { opacity:1;} 100% { opacity:0; transform: translateY(20px);} }
+    /* Footer */
+    footer { background: #444; color: #fff; text-align: center; padding: 20px; margin-top: auto; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo" onclick="location.href='index.html'">Bi Bak Yavvv</div>
+    <div class="search-bar">
+      <input type="text" id="search-input" placeholder="Ev & Yaşam ara..." onkeypress="if(event.key==='Enter') applyFilter()" />
+      <i class="fa fa-search" onclick="applyFilter()"></i>
+    </div>
+    <div style="display:flex;gap:12px;">
+    <button class="fav-btn" onclick="location.href='favorilerim.html'">
+      <i class="fa fa-heart"></i> Favorilerim
+    </button>
+    <div class="cart-btn" onclick="location.href='sepet.html'">
+      <i class="fa-solid fa-cart-shopping"></i>
+      Sepetim <span id="cart-count" class="cart-count">0</span>
+    </div>  </nav>
+
+
+  <div class="breadcrumbs"><a href="index.html">Anasayfa</a> &gt; <span>Ev & Yaşam</span></div>
+
+  <div class="subscribe">
+    <h3>Yeni Fırsatlardan Haberdar Ol</h3>
+    <form onsubmit="subscribe(); return false;" style="display:flex; justify-content:center; gap:8px; flex-wrap:wrap;">
+      <input type="email" id="newsletter" placeholder="E-posta adresinizi girin" required />
+      <button type="submit" class="sub-btn">Abone Ol</button>
+    </form>
+  </div>
+  <div class="controls">
+    <select id="sort-select" onchange="sortProducts()">
+      <option value="popularity">Popülerlik</option>
+      <option value="price-asc">Fiyata Göre (Artan)</option>
+      <option value="price-desc">Fiyata Göre (Azalan)</option>
+    </select>
+    <button onclick="toggleFilter()">Filtre</button>
+    <div class="view-toggle">
+      <button id="grid-btn" class="active" onclick="setView('grid')"><i class="fa fa-th-large"></i></button>
+      <button id="list-btn" onclick="setView('list')"><i class="fa fa-list"></i></button>
+    </div>
+  </div>
+  <div id="filter-panel">
+    <div class="filter-group">
+      <h5>Kategori</h5>
+      <label><input type="checkbox" value="mobilya" onchange="applyFilter()"> Mobilya</label>
+      <label><input type="checkbox" value="dekor" onchange="applyFilter()"> Dekorasyon</label>
+      <label><input type="checkbox" value="mutfak" onchange="applyFilter()"> Mutfak</label>
+      <label><input type="checkbox" value="uyku" onchange="applyFilter()"> Yatak & Uyku</label>
+      <label><input type="checkbox" value="aydınlatma" onchange="applyFilter()"> Aydınlatma</label>
+    </div>
+    <div class="filter-group">
+      <h5>Fiyat Aralığı</h5>
+      <input type="range" id="price-range" min="0" max="5000" step="50" value="5000" oninput="updatePrice()" />
+      <div class="range-value">0 - ₺<span id="price-value">5000</span></div>
+    </div>
+  </div>
+
+  <div id="products" class="products grid-view"></div>
+  <div class="pagination" id="pagination"></div>
+
+  <button id="back-to-top"><i class="fa fa-chevron-up"></i></button>
+  <footer>&copy; 2025 Bi Bak Yavvv. Tüm hakları saklıdır.</footer>
+
+  <div id="quick-modal" class="modal" onclick="this.style.display='none'">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <img id="modal-img" src="" alt="" />
+      <div class="details">
+        <h3 id="modal-title"></h3>
+        <p id="modal-desc"></p>
+        <p class="price" id="modal-price"></p>
+        <button onclick="addToCart(quickId)">Sepete Ekle</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Ürün verisi
+const products = [
+
+        // Mobilya (12 ürün)
+    {id:31, name:'Modern Koltuk Takımı', category:'mobilya', price:2499, image:'img/mobilya1.jpeg', desc:'Konforlu modern koltuk.'},
+    {id:32, name:'Ahşap Yemek Masası', category:'mobilya', price:3299, image:'img/mobilya2.jpeg', desc:'Rustik ahşap masa.'},
+    {id:33, name:'Kitaplık', category:'mobilya', price:1899, image:'img/mobilya3.jpeg', desc:'Şık ahşap kitaplık.'},
+    {id:34, name:'TV Ünitesi', category:'mobilya', price:2199, image:'img/mobilya4.jpeg', desc:'Modern TV ünitesi.'},
+    {id:35, name:'Çalışma Masası', category:'mobilya', price:1599, image:'img/mobilya5.jpeg', desc:'Ergonomik ofis masası.'},
+    {id:36, name:'Şifonyer', category:'mobilya', price:1299, image:'img/mobilya6.jpeg', desc:'Geniş depolamalı şifonyer.'},
+    {id:37, name:'Köşe Takımı', category:'mobilya', price:2899, image:'img/mobilya7.jpeg', desc:'L koltuk takımı.'},
+    {id:38, name:'Dolap', category:'mobilya', price:1799, image:'img/mobilya8.jpeg', desc:'3 kapılı gardırop.'},
+    {id:39, name:'Sehpa Seti', category:'mobilya', price:899, image:'img/mobilya9.jpeg', desc:'Ahşap sehpa takımı.'},
+    {id:40, name:'Yatak Başlığı', category:'mobilya', price:1499, image:'img/mobilya10.jpeg', desc:'Döşemeli yatak başlığı.'},
+    {id:41, name:'Büfe', category:'mobilya', price:1999, image:'img/mobilya11.jpeg', desc:'Antre büfe.'},
+    {id:42, name:'Balkon Takımı', category:'mobilya', price:1599, image:'img/mobilya12.jpeg', desc:'Rattan balkon seti.'},
+
+    // Dekorasyon (10 ürün)
+    {id:43, name:'Duvar Tablosu', category:'dekor', price:499, image:'img/dekor1.jpeg', desc:'Soyut sanat eseri.'},
+    {id:44, name:'Vazo Seti', category:'dekor', price:299, image:'img/dekor2.jpeg', desc:'Seramik dekoratif vazo.'},
+    {id:45, name:'Mumluk', category:'dekor', price:149, image:'img/dekor3.jpeg', desc:'Metalik tasarım mumluk.'},
+    {id:46, name:'Halı (160x230 cm)', category:'dekor', price:899, image:'img/dekor4.jpeg', desc:'Yün el dokuması halı.'},
+    {id:47, name:'Aynalı Konsol', category:'dekor', price:699, image:'img/dekor5.jpeg', desc:'Vintaj aynalı konsol.'},
+    {id:48, name:'Duvar Saati', category:'dekor', price:349, image:'img/dekor6.jpeg', desc:'Modern duvar saati.'},
+    {id:49, name:'Şamdan', category:'dekor', price:199, image:'img/dekor7.jpeg', desc:'Kristal şamdan.'},
+    {id:50, name:'Makrome Duvar Süsü', category:'dekor', price:249, image:'img/dekor8.jpeg', desc:'El yapımı makrome.'},
+    {id:51, name:'Süs Yastığı', category:'dekor', price:129, image:'img/dekor9.jpeg', desc:'Dekoratif yastık.'},
+    {id:52, name:'Bardak Altlığı Seti', category:'dekor', price:89, image:'img/dekor10.jpeg', desc:'Ahşap bardak altlığı.'},
+
+    // Mutfak (10 ürün) - devamı
+    {id:53, name:'Ekmek Kızartma Makinesi', category:'mutfak', price:399, image:'img/mutfak6.jpeg', desc:'Çift yüzlü tost makinesi.'},
+    {id:54, name:'Mikrodalga Fırın', category:'mutfak', price:1299, image:'img/mutfak7.jpeg', desc:'20L kapasiteli.'},
+    {id:55, name:'Bıçak Seti', category:'mutfak', price:499, image:'img/mutfak8.jpeg', desc:'6 parça profesyonel set.'},
+    {id:56, name:'Sürahi Seti', category:'mutfak', price:199, image:'img/mutfak9.jpeg', desc:'Cam sürahi 3lü set.'},
+    {id:57, name:'Meyve Sepeti', category:'mutfak', price:149, image:'img/mutfak10.jpeg', desc:'Ahşap meyve sepeti.'},
+
+    // Yatak & Uyku (8 ürün) - devamı
+    {id:58, name:'Pamuklu Nevresim Takımı', category:'uyku', price:799, image:'img/uyku1.jpeg', desc:'%100 pamuklu nevresim.'},
+    {id:59, name:'Yastık (2li Set)', category:'uyku', price:399, image:'img/uyku2.jpeg', desc:'Ortopedik yastık.'},
+    {id:60, name:'Yorgan', category:'uyku', price:899, image:'img/uyku3.jpeg', desc:'Kışlık kalın yorgan.'},
+    {id:61, name:'Battaniye', category:'uyku', price:299, image:'img/uyku4.jpeg', desc:'Polar battaniye.'},
+    {id:62, name:'Yatak Koruyucu', category:'uyku', price:199, image:'img/uyku5.jpeg', desc:'Su geçirmez koruyucu.'},
+    {id:63, name:'Pike Takımı', category:'uyku', price:499, image:'img/uyku6.jpeg', desc:'Yazlık pike takımı.'},
+    {id:64, name:'Uyku Maskesi', category:'uyku', price:59, image:'img/uyku7.jpeg', desc:'Işık geçirmez maske.'},
+    {id:65, name:'Kulak Tıkacı (10lu)', category:'uyku', price:29, image:'img/uyku8.jpeg', desc:'Ses izolasyonlu.'},
+
+    // Aydınlatma (8 ürün) - devamı
+    {id:66, name:'Şık Avize', category:'aydınlatma', price:1199, image:'img/aydinlatma1.jpeg', desc:'Modern tavan avizesi.'},
+    {id:67, name:'Ayaklı Lamba', category:'aydınlatma', price:649, image:'img/aydinlatma2.jpeg', desc:'Dimmer ayarlı lamba.'},
+    {id:68, name:'LED Ampul (3lü Set)', category:'aydınlatma', price:199, image:'img/aydinlatma3.jpeg', desc:'Enerji tasarruflu LED.'},
+    {id:69, name:'Duvar Aplik', category:'aydınlatma', price:449, image:'img/aydinlatma4.jpeg', desc:'Modern duvar lambası.'},
+    {id:70, name:'Masa Lambası', category:'aydınlatma', price:299, image:'img/aydinlatma5.jpeg', desc:'Ayarlanabilir masa lambası.'},
+    {id:71, name:'Gece Lambası', category:'aydınlatma', price:149, image:'img/aydinlatma6.jpeg', desc:'Renk değiştiren gece lambası.'},
+    {id:72, name:'Bahçe Aydınlatma', category:'aydınlatma', price:799, image:'img/aydinlatma7.jpeg', desc:'Solar bahçe lambası.'},
+    {id:73, name:'Ara Lamba', category:'aydınlatma', price:399, image:'img/aydinlatma8.jpeg', desc:'Salon ara lambası.'}
+];
+
+
+
+    // Sepet ve favori verileri
+    const CART_KEY='sepet', FAV_KEY='favoriler';
+    let cart=JSON.parse(localStorage.getItem(CART_KEY))||[], favs=JSON.parse(localStorage.getItem(FAV_KEY))||[];
+    let filtered=products.slice(), currentPage=1, perPage=6, viewMode='grid';
+
+    function updateCartCount(){ document.getElementById('cart-count').textContent=cart.length; }
+    function showToast(msg){ const t=document.createElement('div'); t.className='toast'; t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.remove(),3000); }
+    function subscribe(){ const mail=document.getElementById('newsletter').value; if(mail) showToast('Kaydınız alındı!'); }
+    function toggleFilter(){ const p=document.getElementById('filter-panel'); p.style.display = p.style.display==='none'?'block':'none'; }
+    function updatePrice(){ document.getElementById('price-value').textContent=document.getElementById('price-range').value; applyFilter(); }
+    function applyFilter(){ const q=document.getElementById('search-input').value.toLowerCase(); const cats=Array.from(document.querySelectorAll('#filter-panel input[type=checkbox]:checked')).map(cb=>cb.value); const maxP=+document.getElementById('price-range').value; filtered=products.filter(p=>p.name.toLowerCase().includes(q)&&(!cats.length||cats.includes(p.category))&&p.price<=maxP); currentPage=1; render(); }
+    function sortProducts(){ const v=document.getElementById('sort-select').value; if(v==='price-asc') filtered.sort((a,b)=>a.price-b.price); else if(v==='price-desc') filtered.sort((a,b)=>b.price-a.price); applyFilter(); }
+    function setView(m){ viewMode=m; document.getElementById('products').className='products '+(m+'-view'); document.getElementById('grid-btn').classList.toggle('active',m==='grid'); document.getElementById('list-btn').classList.toggle('active',m==='list'); }
+    function render(){ const c=document.getElementById('products'); c.innerHTML=''; const start=(currentPage-1)*perPage, end=start+perPage; filtered.slice(start,end).forEach(p=>{ const d=document.createElement('div'); d.className='product'; d.innerHTML=`<img src="${p.image}" alt="${p.name}"/><div class="info"><h4>${p.name}</h4><p class="price">₺${p.price}</p><div class="actions"><button class="add" onclick="addToCart(${p.id})">Sepete Ekle</button><button class="fav ${favs.includes(p.id)?'active':''}" onclick="toggleFav(${p.id})"><i class="fa fa-heart"></i></button></div></div>`; c.appendChild(d); }); renderPagination(); updateCartCount(); }
+    function addToCart(id){ const p=products.find(x=>x.id===id); cart.push({id:p.id,ad:p.name,adet:1,fiyat:p.price}); localStorage.setItem(CART_KEY,JSON.stringify(cart)); updateCartCount(); showToast('Sepete eklendi'); }
+    function toggleFav(id){ favs=favs.includes(id)?favs.filter(x=>x!==id):[...favs,id]; localStorage.setItem(FAV_KEY,JSON.stringify(favs)); render(); showToast(favs.includes(id)?'Favorilere eklendi':'Favorilerden kaldırıldı'); }
+    function renderPagination(){ const pag=document.getElementById('pagination'); pag.innerHTML=''; const pageCount=Math.ceil(filtered.length/perPage); for(let i=1;i<=pageCount;i++){ const btn=document.createElement('button'); btn.textContent=i; btn.className=i===currentPage?'active':''; btn.onclick=()=>{ currentPage=i; render(); }; pag.appendChild(btn);} }
+    document.getElementById('back-to-top').onclick=()=>window.scrollTo({top:0,behavior:'smooth'});
+    window.addEventListener('scroll',()=>{ const b=document.getElementById('back-to-top'); window.pageYOffset>300?b.classList.add('show'):b.classList.remove('show'); });
+    render(); updateCartCount();
+
+
+    
+function updateCartCount() {
+  document.getElementById('cart-count').textContent = cart.reduce((total, item) => total + (item.quantity || 1), 0);
+}
+
+function addToCart(id) {
+  const p = products.find(x => x.id === id); // Ürünü bul
+  cart.push({
+    id: p.id,
+    ad: p.name,
+    adet: 1,
+    fiyat: p.price
+  });
+  localStorage.setItem(CART_KEY, JSON.stringify(cart)); // LocalStorage'e kaydet
+  updateCartCount(); // Sepet sayacını güncelle
+  showToast('Sepete eklendi'); // Bildirim göster
+}
+
+
+    function showToast(msg) {
+      const t = document.createElement('div');
+      t.className = 'toast';
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 3000);
+    }
+    function toggleFilter() {
+      const p = document.getElementById('filter-panel');
+      p.style.display = p.style.display === 'none' ? 'block' : 'none';
+    }
+    function updatePrice() {
+      document.getElementById('price-value').textContent = document.getElementById('price-range').value;
+      applyFilter();
+    }
+    function applyFilter() {
+      const q = document.getElementById('search-input').value.toLowerCase();
+      const cats = Array.from(document.querySelectorAll('#filter-panel input[type=checkbox]:checked'))
+                        .map(cb => cb.value);
+      const maxP = +document.getElementById('price-range').value;
+      filtered = products.filter(p =>
+        p.name.toLowerCase().includes(q) &&
+        (cats.length ? cats.includes(p.category) : true) &&
+        p.price <= maxP
+      );
+      currentPage = 1;
+      render();
+    }
+    function sortProducts() {
+      const v = document.getElementById('sort-select').value;
+      if (v === 'discount-desc') {
+        filtered.sort((a,b) => (b.orig-b.price) - (a.orig-a.price));
+      } else if (v === 'price-asc') {
+        filtered.sort((a,b) => a.price - b.price);
+      } else if (v === 'price-desc') {
+        filtered.sort((a,b) => b.price - a.price);
+      }
+      render();
+    } 
+function renderCart() {
+  const cartContainer = document.getElementById('cart-items');
+  cartContainer.innerHTML = '';
+  
+  if (cart.length === 0) {
+    cartContainer.innerHTML = '<p>Sepetinizde ürün yok.</p>';
+    return;
+  }
+  
+  cart.forEach(item => {
+    const product = products.find(p => p.id === item.id);
+    if (product) {
+      const itemElement = document.createElement('div');
+      itemElement.className = 'cart-item';
+      itemElement.innerHTML = `
+        <img src="${product.image}" alt="${product.name}" width="80">
+        <div>
+          <h4>${product.name}</h4>
+          <p>Fiyat: ₺${product.price}</p>
+          <p>Miktar: ${item.quantity}</p>
+          <p>Toplam: ₺${(product.price * item.quantity).toFixed(2)}</p>
+          <button onclick="removeFromCart(${item.id})">Kaldır</button>
+        </div>
+      `;
+      cartContainer.appendChild(itemElement);
+    }
+  });
+  
+  // Toplam fiyat hesapla
+  const total = cart.reduce((sum, item) => {
+    const product = products.find(p => p.id === item.id);
+    return sum + (product.price * item.quantity);
+  }, 0);
+  
+  cartContainer.innerHTML += `<div class="cart-total">Toplam: ₺${total.toFixed(2)}</div>`;
+}
+
+function removeFromCart(id) {
+  cart = cart.filter(item => item.id !== id);
+  localStorage.setItem(CART_KEY, JSON.stringify(cart));
+  renderCart();
+  updateCartCount();
+}
+
+
+    
+    function renderPagination() {
+      const pag = document.getElementById('pagination');
+      pag.innerHTML = '';
+      const pages = Math.ceil(filtered.length / perPage);
+      for(let i=1;i<=pages;i++){
+        const btn = document.createElement('button');
+        btn.textContent = i;
+        btn.className = i===currentPage?'active':'';
+        btn.onclick = ()=>{ currentPage=i; render(); };
+        pag.appendChild(btn);
+      }
+    }
+
+
+    function toggleFav(id) {
+      let favs = JSON.parse(localStorage.getItem('favoriler'))||[];
+      favs = favs.includes(id) ? favs.filter(x=>x!==id) : [...favs,id];
+      localStorage.setItem('favoriler', JSON.stringify(favs));
+      render();
+      showToast(favs.includes(id)? 'Favorilere eklendi':'Favorilerden kaldırıldı');
+    }
+    document.getElementById('back-to-top').onclick = ()=> window.scrollTo({top:0,behavior:'smooth'});
+    window.addEventListener('scroll', ()=>{
+      const b = document.getElementById('back-to-top');
+      window.scrollY>300 ? b.classList.add('show') : b.classList.remove('show');
+    });
+    render(); updateCartCount();
+  </script>
+</body>
+</html>
+ 
+ 

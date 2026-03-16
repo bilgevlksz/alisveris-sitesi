@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bi Bak Yavvv - Moda</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    :root { --primary: #ff8a00; --secondary: #e52e71; --bg: #f5f5f7; --text: #333; --card-bg: #fff; --shadow: rgba(0,0,0,0.1); }
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin:0; font-family:'Montserrat',sans-serif; background:var(--bg); color:var(--text); display:flex; flex-direction:column; min-height:100vh; }
+    a, button { text-decoration:none; border:none; background:none; font:inherit; color:inherit; cursor:pointer; }
+    .navbar { background: linear-gradient(135deg,var(--primary),var(--secondary)); display:flex; align-items:center; justify-content:space-between; padding:16px 32px; position:sticky; top:0; z-index:100; box-shadow:0 4px 12px var(--shadow); }
+    .logo { color:#fff; font-size:1.8rem; font-weight:700; }
+    .search-bar { flex:1; max-width:500px; margin:0 24px; position:relative; }
+    .search-bar input { width:100%; padding:10px 48px 10px 16px; border-radius:24px; border:1px solid #ddd; transition:box-shadow .3s; }
+    .search-bar input:focus { box-shadow:0 0 8px var(--shadow); outline:none; }
+    .search-bar .fa-search { position:absolute; right:16px; top:50%; transform:translateY(-50%); color:#888; font-size:1.2rem; }
+    .cart-btn { display:flex; align-items:center; gap:8px; padding:8px 16px; background:var(--card-bg); border-radius:24px; box-shadow:0 2px 8px var(--shadow); transition:transform .2s; }
+    .cart-btn:hover { transform:scale(1.05); }
+    .cart-count { background:var(--secondary); color:#fff; border-radius:50%; padding:4px 8px; font-size:.8rem; }
+    .breadcrumbs { max-width:1200px; margin:24px auto 0; padding:0 32px; font-size:.9rem; color:#666; }
+    .breadcrumbs a { color:var(--secondary); }
+    .subscribe { background:#fff; padding:32px 24px; text-align:center; margin:24px auto; max-width:800px; border-radius:12px; box-shadow:0 4px 12px var(--shadow); display:flex; flex-direction:column; gap:16px; }
+    .subscribe h3 { font-weight:600; }
+    .subscribe form { display:flex; justify-content:center; flex-wrap:wrap; gap:8px; }
+    .subscribe input { flex:1; min-width:200px; padding:12px 16px; border:1px solid #ccc; border-radius:6px; }
+    .subscribe .sub-btn { padding:12px 24px; background:var(--secondary); color:#fff; border-radius:6px; transition:background .3s; }
+    .subscribe .sub-btn:hover { background:#bf265c; }
+    .controls { max-width:1200px; margin:0 auto; padding:0 32px; display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-top:24px; }
+    .controls select, .controls button { padding:8px 12px; border:1px solid #ccc; border-radius:6px; background:#fff; }
+    .view-toggle { display:flex; gap:8px; }
+    .view-toggle button { width:36px; height:36px; display:flex; align-items:center; justify-content:center; }
+    .view-toggle .active { background:var(--secondary); color:#fff; border-color:var(--secondary); }
+    #filter-panel { display:none; max-width:1200px; margin:16px auto 32px; padding:0 32px; }
+    .filter-group { background:#fff; padding:16px; border-radius:8px; box-shadow:0 2px 8px var(--shadow); margin-bottom:16px; }
+    .filter-group h5 { margin-bottom:12px; font-weight:600; }
+    .filter-group label { display:block; margin-bottom:8px; }
+    .filter-group .range-value { margin-top:8px; font-size:.9rem; }
+    #products.grid-view { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:24px; max-width:1200px; margin:0 auto 40px; padding:0 32px; }
+    #products.list-view { display:flex; flex-direction:column; align-items:center; gap:24px; margin:0 auto 40px; padding:0 32px; }
+    .product { background:var(--card-bg); border-radius:12px; box-shadow:0 4px 12px var(--shadow); overflow:hidden; position:relative; transition:transform .3s,box-shadow .3s; display:flex; flex-direction:column; }
+    .product:hover { transform:translateY(-8px); box-shadow:0 8px 24px var(--shadow); }
+    #products.list-view .product { flex-direction:row; height:180px; }
+    .product img { width:100%; height:200px; object-fit:contain; }
+    #products.list-view .product img { width:220px; height:100%; }
+    .product .info { padding:16px; flex:1; display:flex; flex-direction:column; }
+    .product .info h4 { margin:0 0 12px; font-weight:600; flex:1; }
+    .product .info .price { margin-bottom:12px; font-weight:700; color:var(--primary); }
+    .product .info .actions { display:flex; gap:8px; }
+    .product .info .actions button { flex:1; padding:10px; border-radius:6px; transition:background .3s; font-weight:600; }
+    .add { background:var(--primary); color:#fff; }
+    .add:hover { background:#e06e00; }
+    .fav { background:#fff; color:var(--secondary); border:1px solid var(--secondary); }
+    .fav.active, .fav:hover { background:var(--secondary); color:#fff; }
+    .product::after { content:'Hızlı Görünüm'; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%) scale(0); background:rgba(0,0,0,0.6); color:#fff; padding:8px 16px; border-radius:4px; font-size:.9rem; transition:transform .3s; }
+    .product:hover::after { transform:translate(-50%,-50%) scale(1); }
+    .pagination { display:flex; justify-content:center; gap:10px; margin-bottom:40px; }
+    .pagination button { padding:8px 12px; border:1px solid #ccc; background:#fff; border-radius:6px; }
+    .pagination button.active, .pagination button:hover { background:var(--secondary); color:#fff; border-color:var(--secondary); }
+    #back-to-top { position:fixed; bottom:30px; right:30px; width:50px; height:50px; background:var(--secondary); color:#fff; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px var(--shadow); opacity:0; visibility:hidden; transition:opacity .3s; z-index:100; }
+    #back-to-top.show { opacity:1; visibility:visible; }
+    .toast { position:fixed; bottom:20px; right:20px; background:rgba(0,0,0,0.8); color:#fff; padding:10px 15px; border-radius:5px; animation:fadeInOut 3s forwards; }
+    @keyframes fadeInOut {0%{opacity:0;transform:translateY(20px);}10%{opacity:1;transform:translateY(0);}90%{opacity:1;}100%{opacity:0;transform:translateY(20px);} }
+    footer{background:#444;color:#fff;text-align:center;padding:20px;margin-top:auto}
+    
+  </style>
+</head>
+<body>
+   <nav class="navbar">
+  <div class="logo" onclick="location.href='index.html'">Bi Bak Yavvv</div>
+  <div class="search-bar">
+    <input type="text" id="search-input" placeholder="Moda ara..." onkeypress="if(event.key==='Enter') applyFilter()" />
+    <i class="fa fa-search" onclick="applyFilter()"></i>
+  </div>
+  <div style="display:flex;gap:12px;">
+    <div class="cart-btn" onclick="location.href='favorilerim.html'">
+  <i class="fa fa-heart"></i>
+  Favorilerim
+</div>
+
+    <div class="cart-btn" onclick="location.href='sepet.html'">
+      <i class="fa-solid fa-cart-shopping"></i>
+      Sepetim <span id="cart-count" class="cart-count">0</span>
+    </div>
+  </div>
+</nav>
+  <div class="breadcrumbs"><a href="index.html">Anasayfa</a> &gt; <span>Moda</span></div>
+  <div class="subscribe">
+    <h3>Haftanın Moda Fırsatları</h3>
+    <form onsubmit="subscribe(); return false;" style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;">
+      <input type="email" id="newsletter" placeholder="E-posta adresinizi girin" required />
+      <button type="submit" class="sub-btn">Abone Ol</button>
+    </form>
+  </div>
+  <div class="controls">
+    <select id="sort-select" onchange="sortProducts()">
+      <option value="popularity">Popülerlik</option>
+      <option value="price-asc">Fiyata Göre (Artan)</option>
+      <option value="price-desc">Fiyata Göre (Azalan)</option>
+    </select>
+    <button onclick="toggleFilter()">Filtre</button>
+    <div class="view-toggle">
+      <button id="grid-btn" class="active" onclick="setView('grid')"><i class="fa fa-th-large"></i></button>
+      <button id="list-btn" onclick="setView('list')"><i class="fa fa-list"></i></button>
+    </div>
+  </div>
+  <div id="filter-panel">
+    <div class="filter-group">
+      <h5>Kategori</h5>
+      <label><input type="checkbox" value="pantolon" onchange="applyFilter()"> pantolon</label>
+      <label><input type="checkbox" value="sort" onchange="applyFilter()"> sort</label>      
+      <label><input type="checkbox" value="tişört" onchange="applyFilter()"> tisort</label>
+      <label><input type="checkbox" value="crop" onchange="applyFilter()"> crop</label>      
+      <label><input type="checkbox" value="etek" onchange="applyFilter()"> etek</label>
+      <label><input type="checkbox" value="elbise" onchange="applyFilter()"> elbise</label>
+      <label><input type="checkbox" value="abiye" onchange="applyFilter()"> abiye</label>
+    </div>
+    <div class="filter-group">
+      <h5>Fiyat Aralığı</h5>
+      <input type="range" id="price-range" min="0" max="2000" step="50" value="2000" oninput="updatePrice()" />
+      <div class="range-value">0 - ₺<span id="price-value">2000</span></div>
+    </div>
+  </div>
+  <div id="products" class="products grid-view"></div>
+  <div class="pagination" id="pagination"></div>
+  <button id="back-to-top"><i class="fa fa-chevron-up"></i></button>
+  <footer>&copy; 2025 Bi Bak Yap. Tüm hakları saklıdır.</footer>
+  <div id="quick-modal" class="modal" onclick="this.style.display='none'">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <img id="modal-img" src="" alt="" />
+      <div class="details"><h3 id="modal-title"></h3><p id="modal-desc"></p><p class="price" id="modal-price"></p><button onclick="addToCart(quickId)">Sepete Ekle</button></div>
+    </div>
+  </div>
+  <script>
+    const CART_KEY='sepet',FAV_KEY='favoriler';let cart=JSON.parse(localStorage.getItem(CART_KEY))||[],favs=JSON.parse(localStorage.getItem(FAV_KEY))||[];
+const products = [
+ {id:74, name:'Beyaz Palazzo Pantolon', category:'pantolon', price:599, image:'img/pantolon1.jpeg', desc:'Şık beyaz palazzo pantolon'}, 
+{id:75, name:'Bej Chino Pantolon', category:'pantolon', price:549, image:'img/pantolon2.jpeg', desc:'Klasik bej chino pantolon'}, 
+{id:76, name:'Mavi Kot Pantolon', category:'pantolon', price:499, image:'img/pantolon3.jpeg', desc:'Rahat mavi kot pantolon'}, 
+{id:77, name:'Siyah Kargo Pantolon', category:'pantolon', price:429, image:'img/pantolon4.jpeg', desc:'Hareket kolaylığı sağlayan siyah kargo pantolon'}, 
+{id:78, name:'Kısa Kot Şort', category:'sort', price:649, image:'img/sort1.jpeg', desc:'Yazlık kısa kot şort'}, 
+{id:79, name:'Yeşil Keten Şort', category:'sort', price:599, image:'img/sort2.jpeg', desc:'Doğal keten yeşil şort'}, 
+{id:80, name:'Pembe Kemerli Şort', category:'sort', price:549, image:'img/sort8.jpeg', desc:'Şık pembe kemerli şort'}, 
+{id:81, name:'Haki Kot Şort', category:'sort', price:599, image:'img/sort3.jpeg', desc:'Askeri tarz haki kot şort'}, 
+{id:82, name:'Siyah Kısa Şort', category:'sort', price:549, image:'img/sort4.jpeg', desc:'Temel siyah kısa şort'}, 
+{id:83, name:'Bej Palazzo Pantolon', category:'pantolon', price:649, image:'img/pantolon6.jpeg', desc:'Şık bej palazzo pantolon'}, 
+{id:84, name:'Siyah Linen Pantolon', category:'pantolon', price:549, image:'img/pantolon8.jpeg', desc:'Hafif siyah linen pantolon'}, 
+{id:85, name:'Kırmızı Yüksek Bel Pantolon', category:'pantolon', price:699, image:'img/pantolon9.jpeg', desc:'Gösterişli kırmızı yüksek bel pantolon'}, 
+{id:86, name:'İspanyol Paça Kot Pantolon', category:'pantolon', price:649, image:'img/pantolon19.jpeg', desc:'Moda ispanyol paça kot pantolon'}, 
+{id:87, name:'Pembe Kot Pantolon', category:'pantolon', price:649, image:'img/pantolon22.jpeg', desc:'Pastel pembe kot pantolon'}, 
+{id:88, name:'Bej Lastikli Kumaş Pantolon', category:'pantolon', price:899, image:'img/pantolon23.jpeg', desc:'Konforlu bej lastikli kumaş pantolon'}, 
+{id:89, name:"Beyaz Basic Tişört", category:"tişört", price:199, image:"img/tisort1.jpeg", desc:"Beyaz Basic tişört"}, 
+{id:90, name:"Siyah Oversize Tişört", category:"tişört", price:249, image:"img/tisort2.jpeg", desc:"Rahat siyah oversize tişört"}, 
+{id:91, name:"Kırmızı Baskılı Tişört", category:"tişört", price:429, image:"img/tisort3.jpeg", desc:"Göz alıcı kırmızı baskılı tişört"}, 
+{id:92, name:"Siyah Çizgili Crop", category:"crop", price:209, image:"img/crop1.jpeg", desc:"Şık siyah çizgili crop tişört"}, 
+{id:93, name:"Yeşil Uzun Kollu Crop", category:"crop", price:379, image:"img/crop2.jpeg", desc:"Uzun kollu yeşil crop tişört"}, 
+{id:94, name:"Siyah Crop Tişört", category:"crop", price:129, image:"img/crop4.jpeg", desc:"Temel siyah crop tişört"}, 
+{id:95, name:"CK Baskılı Tişört", category:"tişört", price:859, image:"img/tisort14.jpeg", desc:"Markalı CK baskılı tişört"}, 
+{id:96, name:"Kırmızı Crop", category:"crop", price:239, image:"img/tisort15.jpeg", desc:"Göz alıcı kırmızı crop"}, 
+{id:97, name:"Siyah Tül Tişört", category:"tişört", price:699, image:"img/crop5.jpeg", desc:"Özel tül detaylı siyah tişört"}, 
+{id:98, name:"Beyaz Fermuarlı Crop", category:"crop", price:1219, image:"img/crop6.jpeg", desc:"Fermuar detaylı beyaz crop"}, 
+{id:99, name:"Mavi Askıklı Crop", category:"crop", price:369, image:"img/crop9.jpeg", desc:"Askı detaylı mavi crop"}, 
+{id:100, name:"Siyah Levis Baskılı Tişört", category:"tişört", price:319, image:"img/tisort23.jpeg", desc:"Levis marka baskılı siyah tişört"}, 
+{id:101, name:"Siyah Graphic Baskılı Tişört", category:"tişört", price:299, image:"img/tisort24.jpeg", desc:"Grafik baskılı siyah tişört"}, 
+{id:102, name:"Pembe Oversize Tişört", category:"tişört", price:539, image:"img/tisort26.jpeg", desc:"Pastel pembe oversize tişört"}, 
+{id:103, name:"Beyaz Tasarım Crop", category:"crop", price:269, image:"img/crop7.jpeg", desc:"Özel tasarım beyaz crop"}, 
+{id:104, name:"Füme Pileli Şort Etek", category:"etek", price:499, image:"img/kisa9.jpeg", desc:"Şık füme renkli pileli şort etek"}, 
+{id:105, name:"Midi Kırmızı Çicekli Etek", category:"etek", price:399, image:"img/etek2.jpeg", desc:"Canlı kırmızı çiçek desenli midi etek"}, 
+{id:106, name:"Siyah Çicekli Etek", category:"etek", price:349, image:"img/etek3.jpeg", desc:"Klasik siyah üzerine çiçek desenli etek"}, 
+{id:107, name:"Beyaz Şifon Midi Etek", category:"etek", price:429, image:"img/etek4.jpeg", desc:"Hafif ve şık beyaz şifon midi etek"}, 
+{id:108, name:"Siyah Jarse Pilili Etek", category:"etek", price:379, image:"img/etek5.jpeg", desc:"Rahat siyah jarse kumaştan pilili etek"}, 
+{id:109, name:"Camel Uzun Etek", category:"etek", price:459, image:"img/etek6.jpeg", desc:"Zarif camel renkli uzun etek"}, 
+{id:110, name:"Siyah Fırfırlı Uzun Etek", category:"etek", price:329, image:"img/etek7.jpeg", desc:"Fırfır detaylı şık siyah uzun etek"}, 
+{id:111, name:"Yırtmaçlı Etek", category:"etek", price:549, image:"img/etek8.jpeg", desc:"Şık yırtmaç detaylı modern etek"}, 
+{id:112, name:"Beyaz Mini Etek", category:"etek", price:399, image:"img/kisa8.jpeg", desc:"Temel beyaz renkli mini etek"}, 
+{id:113, name:"Etnik Uzun Etek", category:"etek", price:479, image:"img/etek10.jpeg", desc:"Etnik desenli uzun ve şık etek"}, 
+{id: 114, name: 'Tek Omuz Bej Balık Uzun Elbise', category: 'elbise', price: 999, image: 'img/elbise1.jpeg', desc: 'Şık ve zarif bir tek omuz bej balık uzun elbise'}, 
+{id: 115, name: 'Mavi Kat Kat Şifon Elbise', category: 'elbise', price: 589, image: 'img/kisa1.jpeg', desc: 'Hafif ve rahat mavi kat kat şifon elbise'}, 
+{id: 116, name: 'Kare Yaka Kemerli Şifon Siyah Elbise', category: 'elbise', price: 599, image: 'img/elbise3.jpeg', desc: 'Şık kare yaka kemerli şifon siyah elbise'}, 
+{id: 117, name: 'Kırmızı Şifon Elbise', category: 'elbise', price: 699, image: 'img/kisa2.jpeg', desc: 'Çarpıcı kırmızı şifon elbise'}, 
+{id: 118, name: 'Mavi Pelerin Detaylı İşlemeli Çiçekli Prenses Abiye Elbise', category: 'abiye', price: 4549, image: 'img/prenses3.jpeg', desc: 'Göz alıcı mavi pelerin detaylı işlemeli çiçekli prenses abiye elbise'}, 
+{id: 119, name: 'Lacivert İşlemeli Abiye', category: 'abiye', price: 3500, image: 'img/abiye8.jpeg', desc: 'Klasik ve şık lacivert işlemeli abiye'}, 
+{id: 120, name: 'Pembe Straplez Fırfırlı Abiye', category: 'abiye', price: 2549, image: 'img/prenes4.jpeg', desc: 'Romantik pembe straplez fırfırlı abiye'}, 
+{id: 121, name: 'Yırtmaçlı Kırmızı Abiye', category: 'abiye', price: 2000, image: 'img/elbise8.jpeg', desc: 'Cesur ve çekici yırtmaçlı kırmızı abiye'}, 
+{id: 122, name: 'Zümrüt Saten Gece Elbisesi', category: 'abiye', price: 1599, image: 'img/abiye2.jpeg', desc: 'Şık zümrüt yeşili saten gece elbisesi'}, 
+{id: 123, name: 'Şifon Toka Detaylı Yırtmaçlı Abiye', category: 'abiye', price: 1800, image: 'img/elbise10.jpeg', desc: 'Toka detaylı şifon yırtmaçlı abiye'}
+];
+
+
+    let filtered=products.slice(),currentPage=1,perPage=6,viewMode='grid';
+    function updateCartCount(){document.getElementById('cart-count').textContent=cart.length;}
+    function showToast(msg){const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),3000);}
+    function subscribe(){const mail=document.getElementById('newsletter').value; if(mail) showToast('Kaydınız alındı!');}
+    function toggleFilter(){const p=document.getElementById('filter-panel');p.style.display=p.style.display==='none'?'block':'none';}
+    function updatePrice(){document.getElementById('price-value').textContent=document.getElementById('price-range').value;applyFilter();}
+    function applyFilter(){const q=document.getElementById('search-input').value.toLowerCase();const cats=Array.from(document.querySelectorAll('#filter-panel input[type=checkbox]:checked')).map(cb=>cb.value);const maxP=+document.getElementById('price-range').value;filtered=products.filter(p=>p.name.toLowerCase().includes(q)&&(!cats.length||cats.includes(p.category))&&p.price<=maxP);currentPage=1;render();}
+    function sortProducts(){const v=document.getElementById('sort-select').value;if(v==='price-asc')filtered.sort((a,b)=>a.price-b.price);else if(v==='price-desc')filtered.sort((a,b)=>b.price-a.price);applyFilter();}
+    function setView(m){viewMode=m;document.getElementById('products').className='products '+(m+'-view');document.getElementById('grid-btn').classList.toggle('active',m==='grid');document.getElementById('list-btn').classList.toggle('active',m==='list');}
+    function render(){const c=document.getElementById('products');c.innerHTML='';const start=(currentPage-1)*perPage,end=start+perPage;filtered.slice(start,end).forEach(p=>{const d=document.createElement('div');d.className='product';d.innerHTML=`<img src="${p.image}" alt="${p.name}"/><div class="info"><h4>${p.name}</h4><p class="price">₺${p.price}</p><div class="actions"><button class="add" onclick="addToCart(${p.id})">Sepete Ekle</button><button class="fav ${favs.includes(p.id)?'active':''}" onclick="toggleFav(${p.id})"><i class="fa fa-heart"></i></button></div></div>`;c.appendChild(d);});renderPagination();updateCartCount();}
+    function addToCart(id){const p=products.find(x=>x.id===id);cart.push({id:p.id,ad:p.name,adet:1,fiyat:p.price});localStorage.setItem(CART_KEY,JSON.stringify(cart));updateCartCount();showToast('Sepete eklendi');}
+    function toggleFav(id){favs=favs.includes(id)?favs.filter(x=>x!==id):[...favs,id];localStorage.setItem(FAV_KEY,JSON.stringify(favs));render();showToast(favs.includes(id)?'Favorilere eklendi':'Favorilerden kaldırıldı');}
+    function renderPagination(){const pag=document.getElementById('pagination');pag.innerHTML='';const pageCount=Math.ceil(filtered.length/perPage);for(let i=1;i<=pageCount;i++){const btn=document.createElement('button');btn.textContent=i;btn.className=i===currentPage?'active':'';btn.onclick=()=>{currentPage=i;render();};pag.appendChild(btn);} }
+    document.getElementById('back-to-top').onclick=()=>window.scrollTo({top:0,behavior:'smooth'});
+    window.addEventListener('scroll',()=>{const b=document.getElementById('back-to-top');window.pageYOffset>300?b.classList.add('show'):b.classList.remove('show');});
+    render();updateCartCount();
+
+    
+function updateCartCount() {
+  document.getElementById('cart-count').textContent = cart.reduce((total, item) => total + (item.quantity || 1), 0);
+}
+
+function addToCart(id) {
+  const p = products.find(x => x.id === id); // Ürünü bul
+  cart.push({
+    id: p.id,
+    ad: p.name,
+    adet: 1,
+    fiyat: p.price
+  });
+  localStorage.setItem(CART_KEY, JSON.stringify(cart)); // LocalStorage'e kaydet
+  updateCartCount(); // Sepet sayacını güncelle
+  showToast('Sepete eklendi'); // Bildirim göster
+}
+
+
+    function showToast(msg) {
+      const t = document.createElement('div');
+      t.className = 'toast';
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 3000);
+    }
+    function toggleFilter() {
+      const p = document.getElementById('filter-panel');
+      p.style.display = p.style.display === 'none' ? 'block' : 'none';
+    }
+    function updatePrice() {
+      document.getElementById('price-value').textContent = document.getElementById('price-range').value;
+      applyFilter();
+    }
+    function applyFilter() {
+      const q = document.getElementById('search-input').value.toLowerCase();
+      const cats = Array.from(document.querySelectorAll('#filter-panel input[type=checkbox]:checked'))
+                        .map(cb => cb.value);
+      const maxP = +document.getElementById('price-range').value;
+      filtered = products.filter(p =>
+        p.name.toLowerCase().includes(q) &&
+        (cats.length ? cats.includes(p.category) : true) &&
+        p.price <= maxP
+      );
+      currentPage = 1;
+      render();
+    }
+    function sortProducts() {
+      const v = document.getElementById('sort-select').value;
+      if (v === 'discount-desc') {
+        filtered.sort((a,b) => (b.orig-b.price) - (a.orig-a.price));
+      } else if (v === 'price-asc') {
+        filtered.sort((a,b) => a.price - b.price);
+      } else if (v === 'price-desc') {
+        filtered.sort((a,b) => b.price - a.price);
+      }
+      render();
+    } 
+function renderCart() {
+  const cartContainer = document.getElementById('cart-items');
+  cartContainer.innerHTML = '';
+  
+  if (cart.length === 0) {
+    cartContainer.innerHTML = '<p>Sepetinizde ürün yok.</p>';
+    return;
+  }
+  
+  cart.forEach(item => {
+    const product = products.find(p => p.id === item.id);
+    if (product) {
+      const itemElement = document.createElement('div');
+      itemElement.className = 'cart-item';
+      itemElement.innerHTML = `
+        <img src="${product.image}" alt="${product.name}" width="80">
+        <div>
+          <h4>${product.name}</h4>
+          <p>Fiyat: ₺${product.price}</p>
+          <p>Miktar: ${item.quantity}</p>
+          <p>Toplam: ₺${(product.price * item.quantity).toFixed(2)}</p>
+          <button onclick="removeFromCart(${item.id})">Kaldır</button>
+        </div>
+      `;
+      cartContainer.appendChild(itemElement);
+    }
+  });
+  
+  // Toplam fiyat hesapla
+  const total = cart.reduce((sum, item) => {
+    const product = products.find(p => p.id === item.id);
+    return sum + (product.price * item.quantity);
+  }, 0);
+  
+  cartContainer.innerHTML += `<div class="cart-total">Toplam: ₺${total.toFixed(2)}</div>`;
+}
+
+function removeFromCart(id) {
+  cart = cart.filter(item => item.id !== id);
+  localStorage.setItem(CART_KEY, JSON.stringify(cart));
+  renderCart();
+  updateCartCount();
+}
+
+
+    
+    function renderPagination() {
+      const pag = document.getElementById('pagination');
+      pag.innerHTML = '';
+      const pages = Math.ceil(filtered.length / perPage);
+      for(let i=1;i<=pages;i++){
+        const btn = document.createElement('button');
+        btn.textContent = i;
+        btn.className = i===currentPage?'active':'';
+        btn.onclick = ()=>{ currentPage=i; render(); };
+        pag.appendChild(btn);
+      }
+    }
+
+
+    function toggleFav(id) {
+      let favs = JSON.parse(localStorage.getItem('favoriler'))||[];
+      favs = favs.includes(id) ? favs.filter(x=>x!==id) : [...favs,id];
+      localStorage.setItem('favoriler', JSON.stringify(favs));
+      render();
+      showToast(favs.includes(id)? 'Favorilere eklendi':'Favorilerden kaldırıldı');
+    }
+    document.getElementById('back-to-top').onclick = ()=> window.scrollTo({top:0,behavior:'smooth'});
+    window.addEventListener('scroll', ()=>{
+      const b = document.getElementById('back-to-top');
+      window.scrollY>300 ? b.classList.add('show') : b.classList.remove('show');
+    });
+    render(); updateCartCount();
+  </script>
+</body>
+</html>
+ 

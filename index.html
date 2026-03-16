@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bi Bak</title>
+  <!-- Font Awesome -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
+  <style>
+    /* Reset & Genel */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Arial', sans-serif;
+      background: #f0f0f5;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    a { text-decoration: none; color: inherit; }
+    /* Header / Nav Bar */
+    .navbar {
+      background: linear-gradient(135deg, #ff8a00, #e52e71);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo {
+      color: #fff;
+      font-size: 2rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      cursor: pointer;
+    }
+    .search-bar {
+      flex: 1;
+      max-width: 400px;
+      margin: 0 20px;
+      position: relative;
+    }
+    .search-bar input {
+      width: 100%;
+      padding: 8px 40px 8px 12px;
+      border-radius: 20px;
+      border: none;
+      outline: none;
+    }
+    .search-bar .fa-search {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #999;
+      cursor: pointer;
+    }
+    /* Sepet Butonu */
+    .cart-btn {
+      background: #fff;
+      color: #444;
+      padding: 8px 14px;
+      border-radius: 30px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: bold;
+      transition: transform 0.2s;
+    }
+    .cart-btn:hover { transform: scale(1.05); }
+    .cart-count {
+      background: #e52e71;
+      color: #fff;
+      border-radius: 50%;
+      padding: 2px 6px;
+      font-size: 0.8rem;
+    }
+    /* Hero Banner */
+    .hero {
+      background: url('img/hero-banner.jpg') center/cover no-repeat;
+      height: 300px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      margin-top: 16px;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+    }
+    .hero-content {
+      position: relative;
+      color: #fff;
+      text-align: center;
+      z-index: 1;
+    }
+    .hero-content h2 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+    .hero-content p {
+      font-size: 1.1rem;
+      margin-bottom: 20px;
+    }
+    .hero-content .btn {
+      background: #ff8a00;
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 25px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .hero-content .btn:hover {
+      background: #e06600;
+    }
+    /* Kategori Grid */
+    .categories {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 20px;
+      flex: 1;
+    }
+    .category {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      overflow: hidden;
+      cursor: pointer;
+      position: relative;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .category:hover { 
+      transform: translateY(-8px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    }
+    .category img {
+      width: 100%;
+      height: 200px;
+      object-fit: contain;
+      transition: transform 0.3s;
+    }
+    .category:hover img { transform: scale(1.05); }
+    .overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: rgba(0,0,0,0.7);
+      color: #fff;
+      text-align: center;
+      padding: 18px;
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      transition: background 0.3s;
+    }
+    .overlay:hover { background: rgba(0,0,0,0.9); }
+    /* Back to Top */
+    #back-to-top {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 50px;
+      height: 50px;
+      background: #e52e71;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s;
+      z-index: 100;
+    }
+    #back-to-top.show { opacity: 1; visibility: visible; }
+    /* Footer */
+    footer {
+      background: #444;
+      color: #fff;
+      text-align: center;
+      padding: 20px;
+    }
+    .social {
+      margin-top: 10px;
+    }
+    .social a {
+      color: #fff;
+      margin: 0 8px;
+      font-size: 1.2rem;
+      transition: color 0.3s;
+    }
+    .social a:hover { color: #ff8a00; }
+    /* Responsive */
+    @media (max-width: 600px) {
+      .navbar { flex-direction: column; gap: 10px; }
+      .search-bar { margin: 0; width: 100%; max-width: none; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo" onclick="location.href='index.html'">Bi Bak Yavvv</div>
+    <div class="search-bar">
+      <input type="text" id="search-input" placeholder="Ne arıyorsunuz?" />
+      <i class="fa fa-search" onclick="doSearch()"></i>
+    </div>
+    <div class="cart-btn" onclick="location.href='sepet.html'">
+      <i class="fa-solid fa-cart-shopping"></i>
+      <span>Sepetim</span>
+      <span id="cart-count" class="cart-count">0</span>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-content">
+      <h2>Haftanın Fırsatları</h2>
+      <p>En yeni indirimli ürünleri keşfedin!</p>
+      <button class="btn" onclick="location.href='indirim.html'">İndirime Git</button>
+    </div>
+  </section>
+
+  <div id="categories" class="categories"></div>
+
+  <footer>
+    <p>&copy; 2025 Bi Bak YAVVV. Tüm hakları saklıdır.</p>
+    <div class="social">
+      <a href="#"><i class="fab fa-facebook-f"></i></a>
+      <a href="#"><i class="fab fa-instagram"></i></a>
+      <a href="#"><i class="fab fa-twitter"></i></a>
+    </div>
+  </footer>
+
+  <button id="back-to-top"><i class="fa fa-chevron-up"></i></button>
+
+  <script>
+    const CART_KEY = 'sepet';
+    function updateCartCount() {
+      const cart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
+      document.getElementById('cart-count').textContent = cart.length;
+    }
+    function doSearch() {
+      const query = document.getElementById('search-input').value.trim();
+      if (query) window.location.href = `search.html?q=${encodeURIComponent(query)}`;
+    }
+    const backToTop = document.getElementById('back-to-top');
+    window.addEventListener('scroll', () => {
+      if (window.pageYOffset > 300) backToTop.classList.add('show');
+      else backToTop.classList.remove('show');
+    });
+    backToTop.addEventListener('click', () => window.scrollTo({top:0, behavior:'smooth'}));
+
+    const categories = [
+      { id: 1, name: 'Moda', image: 'img/moda.jpg', url: 'Moda.html' },
+      { id: 2, name: 'Elektronik', image: 'img/elektronik.jpeg', url: 'Elektronik.html' },
+      { id: 3, name: 'Ev & Yaşam', image: 'img/evYasam.jpeg', url: 'EvYasam.html' }
+    ];
+
+    function renderCategories() {
+      const container = document.getElementById('categories');
+      categories.forEach(cat => {
+        const div = document.createElement('div');
+        div.className = 'category';
+        div.innerHTML = `
+          <img src="${cat.image}" alt="${cat.name}" />
+          <div class="overlay">${cat.name}</div>
+        `;
+        div.onclick = () => window.location.href = cat.url;
+        container.appendChild(div);
+      });
+    }
+
+    renderCategories();
+    updateCartCount();
+  </script>
+</body>
+</html>

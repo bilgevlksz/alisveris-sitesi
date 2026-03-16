@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bi Bak  - İndirimli Ürünler</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    :root {
+      --primary: #ff8a00;
+      --secondary: #e52e71;
+      --bg: #f5f5f7;
+      --text: #333;
+      --card-bg: #fff;
+      --shadow: rgba(0,0,0,0.1);
+      --transition: 0.3s ease;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;min-height:100vh;scroll-behavior:smooth}
+    a,button{text-decoration:none;border:none;background:none;font:inherit;color:inherit;cursor:pointer}
+    /* Navbar */
+    .navbar{background:linear-gradient(135deg,var(--primary),var(--secondary));display:flex;align-items:center;justify-content:space-between;padding:16px 32px;position:sticky;top:0;z-index:100;box-shadow:0 4px 12px var(--shadow);transition:padding var(--transition)}
+    .logo{color:#fff;font-size:2rem;font-weight:700}
+    .search-bar{flex:1;max-width:500px;margin:0 24px;position:relative}
+    .search-bar input{width:100%;padding:10px 48px 10px 16px;border-radius:24px;border:1px solid #ddd;transition:box-shadow var(--transition)}
+    .search-bar input:focus{box-shadow:0 0 8px var(--shadow);outline:none}
+    .search-bar .fa-search{position:absolute;right:16px;top:50%;transform:translateY(-50%);color:#888;font-size:1.2rem}
+    .cart-btn{display:flex;align-items:center;gap:8px;padding:8px 16px;background:var(--card-bg);border-radius:24px;box-shadow:0 2px 8px var(--shadow);transition:transform var(--transition)}
+    .cart-btn:hover{transform:scale(1.05)}
+    .cart-count{background:var(--secondary);color:#fff;border-radius:50%;padding:4px 8px;font-size:.8rem}
+    /* Hero */
+    .hero{position:relative;overflow:hidden;height:300px;margin-top:16px}
+    .hero::after{content:'';position:absolute;inset:0;background:rgba(0,0,0,0.4)}
+    .hero img{width:100%;height:100%;object-fit:cover;filter:brightness(0.7)}
+    .hero-content{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#fff;text-align:center;z-index:1}
+    .hero-content h2{font-size:2.5rem;margin-bottom:8px}
+    .hero-content p{font-size:1.1rem;margin-bottom:16px}
+    .hero-content .btn{background:var(--primary);color:#fff;padding:10px 24px;border-radius:30px;font-weight:600;transition:background var(--transition)}
+    .hero-content .btn:hover{background:#e06e00}
+    /* Controls */
+    .controls{max-width:1200px;margin:24px auto;display:flex;align-items:center;justify-content:space-between;padding:0 32px;gap:16px;flex-wrap:wrap}
+    .controls select,.controls button{padding:8px 12px;border:1px solid #ccc;border-radius:6px;background:#fff}
+    .controls button:hover,.controls select:hover{border-color:#999}
+    /* Filter Panel */
+    #filter-panel{display:none;max-width:1200px;margin:0 auto 32px;padding:0 32px}
+    .filter-group{background:#fff;padding:16px;border-radius:8px;box-shadow:0 2px 8px var(--shadow);margin-bottom:16px}
+    .filter-group h5{margin-bottom:12px;font-weight:600}
+    .filter-group label{display:block;margin-bottom:8px}
+    .filter-group .range-value{margin-top:8px;font-size:.9rem}
+    /* Products Grid */
+    #products{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:24px;max-width:1200px;margin:0 auto 40px;padding:0 32px;}
+    .product{background:var(--card-bg);border-radius:12px;box-shadow:0 4px 12px var(--shadow);position:relative;overflow:hidden;display:flex;flex-direction:column;transition:transform var(--transition),box-shadow var(--transition)}
+    .product:hover{transform:translateY(-6px);box-shadow:0 8px 24px var(--shadow)}
+    .product img{width:100%;height:200px;object-fit:cover}
+    .badge{position:absolute;top:12px;left:12px;background:var(--secondary);color:#fff;padding:4px 8px;border-radius:4px;font-size:.8rem;}
+    .product .info{padding:16px;flex:1;display:flex;flex-direction:column}
+    .product .info h4{margin:0 0 8px;font-weight:600;flex:1}
+    .product .info .prices{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+    .product .info .old{text-decoration:line-through;color:#999}
+    .product .info .new{font-weight:700;color:var(--primary)}
+    .product .info .actions{display:flex;gap:8px}
+    .product .info .actions button{flex:1;padding:10px;border-radius:6px;font-weight:600;transition:background var(--transition)}
+    .add{background:var(--primary);color:#fff}
+    
+ .fav {
+  background: #fff;
+  color: var(--secondary); /* Normal durumda pembe renk */
+  border: 1px solid var(--secondary);
+}
+
+.fav.active, .fav:hover {
+  background: var(--secondary); /* Aktif/hover durumunda pembe arkaplan */
+  color: #fff;
+}
+
+/* Quick View Overlay */
+    .product::after {
+      content: 'Hızlı Görünüm';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%,-50%) scale(0);
+      background: rgba(0,0,0,0.6);
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-size: .9rem;
+      transition: transform .3s;
+    }
+    /* Toast */
+    .toast{position:fixed;bottom:20px;right:20px;background:rgba(0,0,0,0.8);color:#fff;padding:10px 15px;border-radius:5px;animation:fadeInOut 3s forwards}
+    @keyframes fadeInOut{0%{opacity:0;transform:translateY(20px)}10%{opacity:1;transform:translateY(0)}90%{opacity:1}100%{opacity:0;transform:translateY(20px)}}
+    /* Back to Top */
+    #back-to-top{position:fixed;bottom:30px;right:30px;width:50px;height:50px;background:var(--secondary);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px var(--shadow);opacity:0;visibility:hidden;transition:opacity var(--transition);z-index:100}
+    #back-to-top.show{opacity:1;visibility:visible}
+    /* Footer */
+    footer{background:#444;color:#fff;text-align:center;padding:20px;margin-top:auto}
+    .social{margin-top:8px}
+    .social a{color:#fff;margin:0 8px;font-size:1.2rem;transition:color var(--transition)}
+    .social a:hover{color:var(--primary)}
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+  <div class="logo" onclick="location.href='index.html'">Bi Bak Yavvv</div>
+  <div class="search-bar">
+    <input type="text" id="search-input" placeholder="İndirim ara..." onkeypress="if(event.key==='Enter') applyFilter()" />
+    <i class="fa fa-search" onclick="applyFilter()"></i>
+  </div>
+  <div style="display:flex;gap:12px;">
+    <div class="cart-btn" onclick="location.href='favorilerim.html'">
+  <i class="fa fa-heart"></i>
+  Favorilerim
+</div>
+
+    <div class="cart-btn" onclick="location.href='sepet.html'">
+      <i class="fa-solid fa-cart-shopping"></i>
+      Sepetim <span id="cart-count" class="cart-count">0</span>
+    </div>
+  </div>
+</nav>
+
+  <section class="hero">
+    <img src="img/discount-hero.jpg" alt="İndirimli Ürünler" />
+    <div class="hero-content">
+      <h2>Dev İndirimler Başladı!</h2>
+      <p>Yüzlerce üründe %10-%70'e varan fırsatlar seni bekliyor.</p>
+    </div>
+  </section>
+
+  <div class="controls">
+    <select id="sort-select" onchange="sortProducts()">
+      <option value="popularity">Popülerlik</option>
+       <option value="price-asc">Fiyata Göre (Artan)</option>
+      <option value="price-desc">Fiyata Göre (Azalan)</option>
+    </select>
+    <button onclick="toggleFilter()">Filtrele</button>
+  </div>
+
+  <div id="filter-panel">
+    <div class="filter-group">
+      <h5>Kategori</h5>
+      <label><input type="checkbox" value="kadın" onchange="applyFilter()"> Moda</label>
+      <label><input type="checkbox" value="telefon" onchange="applyFilter()"> Elektronik</label>
+      <label><input type="checkbox" value="ev" onchange="applyFilter()"> Ev & Yaşam</label>
+    </div>
+    <div class="filter-group">
+      <h5>Fiyat Aralığı</h5>
+      <input type="range" id="price-range" min="0" max="10000" step="100" value="10000" oninput="updatePrice()">
+      <div class="range-value">0 - ₺<span id="price-value">10000</span></div>
+    </div>
+  </div>
+ 
+  <div id="products"></div>
+  <div class="pagination" id="pagination"></div>
+
+  <button id="back-to-top"><i class="fa fa-chevron-up"></i></button>
+
+  <footer>
+    <p>&copy; 2025 Bi Bak Yavvv. Tüm hakları saklıdır.</p>
+    <div class="social">
+      <a href="#"><i class="fab fa-facebook-f"></i></a>
+      <a href="#"><i class="fab fa-instagram"></i></a>
+      <a href="#"><i class="fab fa-twitter"></i></a>
+    </div>
+  </footer>
+
+  <script>
+const CART_KEY = 'sepet';
+let cart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
+const products = [
+  // Moda (5 ürün)
+  {id:124, name:'Kadın Deri Ceket', category:'kadın', price:599, orig:899, image:'img/moda1.jpeg', desc:'%33 indirim! Siyah deri ceket'},
+  {id:125, name:'Erkek Sneaker', category:'kadın', price:499, orig:799, image:'img/moda2.jpeg', desc:'%38 indirim! Spor ayakkabı'},
+  {id:126, name:'Güneş Gözlüğü', category:'kadın', price:199, orig:349, image:'img/moda3.jpeg', desc:'%43 indirim! Polarize cam'},
+  {id:127, name:'Çanta Seti', category:'kadın', price:399, orig:599, image:'img/moda4.jpeg', desc:'%33 indirim! 3 parça set'},
+  {id:128, name:'Şık Saat', category:'kadın', price:299, orig:459, image:'img/moda5.jpeg', desc:'%35 indirim! Kadın kol saati'},
+
+  // Elektronik (5 ürün)
+  {id:129, name:'Bluetooth Kulaklık', category:'telefon', price:499, orig:799, image:'img/elek1.jpeg', desc:'%38 indirim! Ses yalıtımlı'},
+  {id:130, name:'Powerbank 10000mAh', category:'telefon', price:299, orig:499, image:'img/elek2.jpeg', desc:'%40 indirim! Hızlı şarj'},
+  {id:131, name:'Akıllı Saat', category:'telefon', price:899, orig:1299, image:'img/elek3.jpeg', desc:'%31 indirim! Nabız ölçer'},
+  {id:132, name:'Telefon Kılıfı', category:'telefon', price:99, orig:199, image:'img/elek4.jpeg', desc:'%50 indirim! Çift kat koruma'},
+  {id:133, name:'Selfie Çubuğu', category:'telefon', price:59, orig:149, image:'img/elek5.jpeg', desc:'%60 indirim! Bluetoothlu'},
+
+  // Ev & Yaşam (5 ürün)
+  {id:134, name:'Yorgan Seti', category:'ev', price:449, orig:699, image:'img/ev1.jpeg', desc:'%36 indirim! 4 parça set'},
+  {id:135, name:'Akıllı Süpürge', category:'ev', price:1499, orig:1999, image:'img/ev2.jpeg', desc:'%25 indirim! Dikey tasarım'},
+  {id:136, name:'Mutfak Seti', category:'ev', price:599, orig:899, image:'img/ev3.jpeg', desc:'%33 indirim! 12 parça'},
+  {id:137, name:'Aromatik Mum', category:'ev', price:79, orig:129, image:'img/ev4.jpeg', desc:'%39 indirim! Lavanta kokulu'},
+  {id:138, name:'Banyo Havlusu', category:'ev', price:129, orig:199, image:'img/ev5.jpeg', desc:'%35 indirim! Pamuklu set'}
+];
+
+    let filtered = products.slice(), currentPage = 1, perPage = 8;
+
+function updateCartCount() {
+  document.getElementById('cart-count').textContent = cart.reduce((total, item) => total + (item.quantity || 1), 0);
+}
+
+function addToCart(id) {
+  const p = products.find(x => x.id === id); // Ürünü bul
+  cart.push({
+    id: p.id,
+    ad: p.name,
+    adet: 1,
+    fiyat: p.price
+  });
+  localStorage.setItem(CART_KEY, JSON.stringify(cart)); // LocalStorage'e kaydet
+  updateCartCount(); // Sepet sayacını güncelle
+  showToast('Sepete eklendi'); // Bildirim göster
+}
+
+
+    function showToast(msg) {
+      const t = document.createElement('div');
+      t.className = 'toast';
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 3000);
+    }
+    function toggleFilter() {
+      const p = document.getElementById('filter-panel');
+      p.style.display = p.style.display === 'none' ? 'block' : 'none';
+    }
+    function updatePrice() {
+      document.getElementById('price-value').textContent = document.getElementById('price-range').value;
+      applyFilter();
+    }
+    function applyFilter() {
+      const q = document.getElementById('search-input').value.toLowerCase();
+      const cats = Array.from(document.querySelectorAll('#filter-panel input[type=checkbox]:checked'))
+                        .map(cb => cb.value);
+      const maxP = +document.getElementById('price-range').value;
+      filtered = products.filter(p =>
+        p.name.toLowerCase().includes(q) &&
+        (cats.length ? cats.includes(p.category) : true) &&
+        p.price <= maxP
+      );
+      currentPage = 1;
+      render();
+    }
+    function sortProducts() {
+      const v = document.getElementById('sort-select').value;
+      if (v === 'discount-desc') {
+        filtered.sort((a,b) => (b.orig-b.price) - (a.orig-a.price));
+      } else if (v === 'price-asc') {
+        filtered.sort((a,b) => a.price - b.price);
+      } else if (v === 'price-desc') {
+        filtered.sort((a,b) => b.price - a.price);
+      }
+      render();
+    }
+function render() {
+  const c = document.getElementById('products');
+  c.innerHTML = '';
+  const start = (currentPage - 1) * perPage, end = start + perPage;
+  filtered.slice(start, end).forEach(p => {
+    const d = document.createElement('div');
+    d.className = 'product';
+    const discount = Math.round((p.orig - p.price) / p.orig * 100);
+    d.innerHTML = `
+      <span class="badge">-%${discount}</span>
+      <img src="${p.image}" alt="${p.name}" />
+      <div class="info">
+        <h4>${p.name}</h4>
+        <div class="prices">
+          <span class="old">₺${p.orig}</span>
+          <span class="new">₺${p.price}</span>
+        </div>
+        <div class="actions">
+        <button class="add" onclick="addToCart(${p.id})">Sepete Ekle</button>
+          <button class="fav" onclick="toggleFav(${p.id})"><i class="fa fa-heart"></i></button>
+        </div>
+      </div>`;
+    c.appendChild(d);
+  });
+  renderPagination();
+  updateCartCount();
+}
+
+function renderCart() {
+  const cartContainer = document.getElementById('cart-items');
+  cartContainer.innerHTML = '';
+  
+  if (cart.length === 0) {
+    cartContainer.innerHTML = '<p>Sepetinizde ürün yok.</p>';
+    return;
+  }
+  
+  cart.forEach(item => {
+    const product = products.find(p => p.id === item.id);
+    if (product) {
+      const itemElement = document.createElement('div');
+      itemElement.className = 'cart-item';
+      itemElement.innerHTML = `
+        <img src="${product.image}" alt="${product.name}" width="80">
+        <div>
+          <h4>${product.name}</h4>
+          <p>Fiyat: ₺${product.price}</p>
+          <p>Miktar: ${item.quantity}</p>
+          <p>Toplam: ₺${(product.price * item.quantity).toFixed(2)}</p>
+          <button onclick="removeFromCart(${item.id})">Kaldır</button>
+        </div>
+      `;
+      cartContainer.appendChild(itemElement);
+    }
+  });
+  
+  // Toplam fiyat hesapla
+  const total = cart.reduce((sum, item) => {
+    const product = products.find(p => p.id === item.id);
+    return sum + (product.price * item.quantity);
+  }, 0);
+  
+  cartContainer.innerHTML += `<div class="cart-total">Toplam: ₺${total.toFixed(2)}</div>`;
+}
+
+function removeFromCart(id) {
+  cart = cart.filter(item => item.id !== id);
+  localStorage.setItem(CART_KEY, JSON.stringify(cart));
+  renderCart();
+  updateCartCount();
+}
+
+
+    
+    function renderPagination() {
+      const pag = document.getElementById('pagination');
+      pag.innerHTML = '';
+      const pages = Math.ceil(filtered.length / perPage);
+      for(let i=1;i<=pages;i++){
+        const btn = document.createElement('button');
+        btn.textContent = i;
+        btn.className = i===currentPage?'active':'';
+        btn.onclick = ()=>{ currentPage=i; render(); };
+        pag.appendChild(btn);
+      }
+    }
+
+
+    function toggleFav(id) {
+      let favs = JSON.parse(localStorage.getItem('favoriler'))||[];
+      favs = favs.includes(id) ? favs.filter(x=>x!==id) : [...favs,id];
+      localStorage.setItem('favoriler', JSON.stringify(favs));
+      render();
+      showToast(favs.includes(id)? 'Favorilere eklendi':'Favorilerden kaldırıldı');
+    }
+    document.getElementById('back-to-top').onclick = ()=> window.scrollTo({top:0,behavior:'smooth'});
+    window.addEventListener('scroll', ()=>{
+      const b = document.getElementById('back-to-top');
+      window.scrollY>300 ? b.classList.add('show') : b.classList.remove('show');
+    });
+    render(); updateCartCount();
+  </script>
+</body>
+</html>

@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bi Bak Yavvv - Sepet</title>
+  <!-- Font Awesome -->
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer" />
+  <style>
+    /* Reset & Genel */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Arial', sans-serif;
+      background: #f0f0f5;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      color: #333;
+    }
+    a { text-decoration: none; color: inherit; }
+    /* Navbar */
+    .navbar {
+      background: linear-gradient(135deg, #ff8a00, #e52e71);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo {
+      color: #fff;
+      font-size: 1.8rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .navbar .cart-btn {
+      background: #fff;
+      color: #444;
+      padding: 6px 12px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: bold;
+      transition: transform .2s;
+    }
+    .navbar .cart-btn:hover { transform: scale(1.05); }
+    .navbar .cart-count {
+      background: #e52e71;
+      color: #fff;
+      border-radius: 50%;
+      padding: 2px 6px;
+      font-size: 0.8rem;
+    }
+    /* Sepet Alanı */
+    .cart-container {
+      flex: 1;
+      max-width: 900px;
+      margin: 30px auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    th, td {
+      padding: 12px;
+      text-align: center;
+    }
+    th { background: #f8f8f8; }
+    tr:not(:last-child) td { border-bottom: 1px solid #eee; }
+    .qty-input {
+      width: 50px;
+      padding: 4px;
+      text-align: center;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .remove-btn {
+      background: transparent;
+      border: none;
+      color: #c0392b;
+      cursor: pointer;
+      font-size: 1.1rem;
+      transition: color .2s;
+    }
+    .remove-btn:hover { color: #e74c3c; }
+    .total {
+      text-align: right;
+      font-weight: bold;
+      font-size: 1.3rem;
+      margin-bottom: 20px;
+    }
+    /* Kupon Kodu */
+    .coupon {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .coupon input {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .coupon button {
+      padding: 8px 16px;
+      background: #ff8a00;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .coupon button:hover { background: #e06600; }
+    /* Satın Al Butonu */
+    .purchase-btn {
+      width: 100%;
+      padding: 12px;
+      background: #27ae60;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .purchase-btn:hover { background: #219150; }
+    /* Back to Top */
+    #back-to-top {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 50px;
+      height: 50px;
+      background: #e52e71;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity .3s;
+      z-index: 100;
+    }
+    #back-to-top.show { opacity: 1; visibility: visible; }
+    /* Footer */
+    footer {
+      background: #444;
+      color: #fff;
+      text-align: center;
+      padding: 15px;
+      font-size: 0.9rem;
+    }
+    /* Toast Mesaj */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(0,0,0,0.8);
+      color: #fff;
+      padding: 10px 15px;
+      border-radius: 5px;
+      animation: fadeInOut 3s forwards;
+      z-index: 1000;
+    }
+    @keyframes fadeInOut {
+      0% { opacity: 0; transform: translateY(20px); }
+      10%, 90% { opacity: 1; transform: translateY(0); }
+      100% { opacity: 0; transform: translateY(20px); }
+    }
+    /* Responsive */
+    @media (max-width: 600px) {
+      .cart-container { padding: 10px; }
+      .coupon { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo" onclick="location.href='index.html'">Bi Bak Yavvv</div>
+    <div class="cart-btn">
+      <i class="fa-solid fa-cart-shopping"></i> Sepetim <span id="cart-count" class="cart-count">0</span>
+    </div>
+  </nav>
+
+  <div class="cart-container">
+    <table id="cart-table">
+      <thead>
+        <tr>
+          <th>Ürün</th>
+          <th>Adet</th>
+          <th>Birim Fiyat</th>
+          <th>Ara Toplam</th>
+          <th>Sil</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <div class="coupon">
+      <input type="text" id="coupon-code" placeholder="Kupon kodu girin" />
+      <button id="apply-coupon">Uygula</button>
+    </div>
+
+    <div class="total" id="cart-total">Toplam: ₺0</div>
+    <button class="purchase-btn" id="purchase">Ödemeye Geç</button>
+  </div>
+
+  <button id="back-to-top"><i class="fa fa-chevron-up"></i></button>
+
+  <footer>&copy; 2025 Bi Bak Yavvv. Tüm hakları saklıdır.</footer>
+
+  <script>
+    const CART_KEY = 'sepet';
+    let cart = JSON.parse(localStorage.getItem(CART_KEY)) || [];
+    const tbody = document.querySelector('#cart-table tbody');
+    const totalDiv = document.getElementById('cart-total');
+    const cartCount = document.getElementById('cart-count');
+    let total = 0;
+
+    function renderCart() {
+      tbody.innerHTML = '';
+      total = 0;
+      if (cart.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5">Sepetiniz boş.</td></tr>';
+        updateCartCount();
+        updateTotal();
+        return;
+      }
+      cart.forEach((item, idx) => {
+        const sub = item.fiyat * item.adet;
+        total += sub;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${item.ad}</td>
+          <td><input type="number" class="qty-input" min="1" value="${item.adet}" data-idx="${idx}" /></td>
+          <td>₺${item.fiyat}</td>
+          <td>₺${sub.toFixed(2)}</td>
+          <td><button class="remove-btn" data-idx="${idx}"><i class="fa fa-trash"></i></button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+      updateCartCount();
+      updateTotal();
+      attachEvents();
+    }
+
+    function attachEvents() {
+      document.querySelectorAll('.qty-input').forEach(input => {
+        input.onchange = () => {
+          const idx = input.dataset.idx;
+          cart[idx].adet = parseInt(input.value) || 1;
+          saveAndRender();
+        };
+      });
+      document.querySelectorAll('.remove-btn').forEach(btn => {
+        btn.onclick = () => {
+          const idx = btn.dataset.idx;
+          cart.splice(idx,1);
+          saveAndRender();
+          showToast('Ürün sepetten kaldırıldı');
+        };
+      });
+    }
+
+    function saveAndRender() {
+      localStorage.setItem(CART_KEY, JSON.stringify(cart));
+      renderCart();
+    }
+
+    function updateCartCount() {
+      cartCount.textContent = cart.reduce((sum,i)=>sum+i.adet,0);
+    }
+
+    function updateTotal() {
+      totalDiv.textContent = 'Toplam: ₺' + total.toFixed(2);
+    }
+
+    document.getElementById('apply-coupon').onclick = () => {
+      const code = document.getElementById('coupon-code').value.trim();
+      if (code === 'BI10') {
+        total *= 0.9;
+        updateTotal();
+        showToast('%10 indirim uygulandı!');
+      } else showToast('Geçersiz kupon kodu');
+    };
+
+    document.getElementById('purchase').onclick = () => {
+      if (!cart.length) return showToast('Önce sepetinizi doldurun');
+      window.location.href = 'checkout.html';
+    };
+
+    function showToast(msg) {
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.textContent = msg;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+
+    // Back to Top
+    const back = document.getElementById('back-to-top');
+    window.addEventListener('scroll', () => {
+      if (window.pageYOffset > 300) back.classList.add('show');
+      else back.classList.remove('show');
+    });
+    back.onclick = () => window.scrollTo({top:0, behavior:'smooth'});
+
+    renderCart();
+  </script>
+</body>
+</html>
